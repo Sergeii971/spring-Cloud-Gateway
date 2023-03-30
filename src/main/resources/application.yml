@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: spring-cloud-gateway
+  cloud:
+      gateway:
+        routes:
+          - id: RESOURCE-SERVICE
+            uri: lb://RESOURCE-SERVICE
+            predicates:
+              - Path=/v1/resources/**
+          - id: SONG-SERVICE
+            uri: lb://SONG-SERVICE
+            predicates:
+              - Path=/v1/songs/**
+server:
+  port: 8084
+
+eureka:
+  instance:
+    hostname: localhost
+  eureka:
+    client:
+      serviceUrl:
+        defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway

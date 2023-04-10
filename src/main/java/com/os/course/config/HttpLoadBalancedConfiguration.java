@@ -1,5 +1,6 @@
 package com.os.course.config;
 
+import com.os.course.util.ResourceType;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
@@ -9,10 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Configuration
 public class HttpLoadBalancedConfiguration {
-    private static final String SONG_SERVICE_ID = "SONG-SERVICE";
-    private static final String RESOURCE_SERVICE_ID = "RESOURCE-SERVICE";
 
     @LoadBalanced
     @Bean
@@ -36,12 +38,18 @@ public class HttpLoadBalancedConfiguration {
             }
 
             private int getServicePort(String serviceId) {
-                return RESOURCE_SERVICE_ID.equalsIgnoreCase(serviceId) ? 8081 : 8082;
+               return Arrays.stream(ResourceType.values())
+                        .filter(resourceType -> resourceType.getResourceId().equalsIgnoreCase(serviceId))
+                        .findAny()
+                        .map(ResourceType::getPort)
+                        .orElseThrow(() -> new RuntimeException("microservice with this id not found"));
             }
 
             @Override
             public Flux<String> getServices() {
-                return Flux.just(RESOURCE_SERVICE_ID, SONG_SERVICE_ID);
+                return Flux.fromIterable(Arrays.stream(ResourceType.values())
+                        .map(ResourceType::getResourceId)
+                        .collect(Collectors.toList()));
             }
         };
     }

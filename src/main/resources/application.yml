@@ -16,8 +16,16 @@ spring:
             uri: lb://STORAGE-SERVICE
             predicates:
               - Path=/v1/storages/**
+          - id: KIBANA
+            uri: http://localhost:5601
+            predicates:
+              - Path=/**
 server:
   port: 8084
+
+logging:
+  file:
+    name : ./log/spring-cloud-gateway.log
 
 eureka:
   instance:

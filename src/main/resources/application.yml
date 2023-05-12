@@ -16,6 +16,10 @@ spring:
             uri: lb://STORAGE-SERVICE
             predicates:
               - Path=/v1/storages/**
+          - id: AUTHORIZATION-SERVICE
+            uri: lb://AUTHORIZATION-SERVICE
+            predicates:
+              - Path=/api/auth/**
           - id: KIBANA
             uri: http://localhost:5601
             predicates:
